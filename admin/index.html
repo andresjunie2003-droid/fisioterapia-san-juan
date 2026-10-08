@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f4f3ef">
+  <style>.admin-recovery-link{display:block;margin-top:15px;padding:0;border:0;background:none;color:#526451;text-decoration:underline;font:inherit;font-size:14px;cursor:pointer}</style>
   <title>Administración · Fisioterapia San Juan</title><link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body>
@@ -15,6 +16,13 @@
       <form data-login-form class="admin-login" hidden>
         <h2>Iniciar sesión</h2><label class="admin-field"><span>Correo electrónico</span><input name="email" type="email" autocomplete="username" required></label>
         <label class="admin-field"><span>Contraseña</span><input name="password" type="password" autocomplete="current-password" required></label><button class="admin-button" type="submit">Entrar al panel</button>
+        <button class="admin-recovery-link" type="button" data-request-password>Crear o restablecer contraseña</button>
+      </form>
+      <form data-password-reset class="admin-login" hidden>
+        <h2>Crear contraseña</h2>
+        <label class="admin-field"><span>Nueva contraseña</span><input name="new-password" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label class="admin-field"><span>Repite la contraseña</span><input name="confirm-password" type="password" autocomplete="new-password" minlength="8" required></label>
+        <button class="admin-button" type="submit">Guardar contraseña</button>
       </form>
       <form data-editor hidden>
         <div class="admin-toolbar"><h2>Contenido</h2><button class="admin-button admin-button--quiet" type="button" data-logout>Cerrar sesión</button></div>
@@ -41,5 +49,51 @@
     <footer>Centro de Fisioterapia San Juan · Acceso privado</footer>
   </main>
   <script type="module" src="../assets/js/admin.js"></script>
+  <script type="module">
+    import { api, saveSession } from '../assets/js/cms-client.js';
+    const login = document.querySelector('[data-login-form]');
+    const reset = document.querySelector('[data-password-reset]');
+    const status = document.querySelector('[data-status]');
+    const say = (message, error = false) => { status.textContent = message; status.dataset.error = String(error); };
+    let recovery = null;
+    document.querySelector('[data-request-password]').addEventListener('click', async () => {
+      const email = login.elements.namedItem('email').value.trim();
+      if (!email) { login.elements.namedItem('email').focus(); say('Escribe primero tu correo electrónico.', true); return; }
+      say('Enviando enlace para crear o restablecer la contraseña…');
+      try {
+        const redirectTo = new URL(location.href); redirectTo.search = ''; redirectTo.hash = '';
+        await api(`/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo.href)}`, { method: 'POST', body: { email } });
+        say('Si ese correo tiene una cuenta, recibirás un enlace. Ábrelo en este dispositivo para crear la contraseña.');
+      } catch (error) { say(error.message, true); }
+    });
+    reset.addEventListener('submit', async event => {
+      event.preventDefault();
+      const password = reset.elements.namedItem('new-password').value;
+      const confirmation = reset.elements.namedItem('confirm-password').value;
+      if (password !== confirmation) { say('Las contraseñas no coinciden.', true); return; }
+      if (!recovery) { say('Solicita un enlace nuevo para crear la contraseña.', true); return; }
+      say('Guardando contraseña…');
+      try {
+        await api('/auth/v1/user', { method: 'PUT', token: recovery.access_token, body: { password } });
+        saveSession({ ...recovery, user: recovery.profile, id: recovery.profile.id, email: recovery.profile.email });
+        history.replaceState(null, '', location.pathname);
+        location.reload();
+      } catch (error) { say(error.message, true); }
+    });
+    const params = new URLSearchParams(location.hash.slice(1));
+    const query = new URLSearchParams(location.search);
+    if (query.has('error_description') || params.has('error_description')) {
+      history.replaceState(null, '', location.pathname);
+      say('El enlace ha caducado o ya se ha usado. Solicita uno nuevo desde aquí.', true);
+    } else if (params.has('access_token')) {
+      recovery = Object.fromEntries(params.entries());
+      history.replaceState(null, '', location.pathname);
+      try {
+        recovery.profile = await api('/auth/v1/user', { token: recovery.access_token });
+        login.hidden = true; reset.hidden = false;
+        say('Enlace verificado. Crea una contraseña de al menos 8 caracteres.');
+      } catch (error) { recovery = null; say(`No se pudo verificar el enlace: ${error.message}`, true); }
+    }
+  </script>
 </body>
 </html>
