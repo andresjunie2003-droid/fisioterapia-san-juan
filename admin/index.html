@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f4f3ef">
+  <title>Administración · Fisioterapia San Juan</title><link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header"><a class="admin-brand" href="../">San Juan <span>· Administración</span></a><a href="../" class="admin-site-link">Ver web pública ↗</a></header>
+    <section class="admin-card" aria-labelledby="page-title">
+      <p class="admin-eyebrow">Panel del centro</p><h1 id="page-title">Gestiona tu web</h1>
+      <p class="admin-intro">Actualiza los datos del centro y guarda los cambios. Se publicarán en la web automáticamente.</p>
+      <p class="admin-status" data-status role="status" aria-live="polite"></p>
+      <form data-login-form class="admin-login" hidden>
+        <h2>Iniciar sesión</h2><label class="admin-field"><span>Correo electrónico</span><input name="email" type="email" autocomplete="username" required></label>
+        <label class="admin-field"><span>Contraseña</span><input name="password" type="password" autocomplete="current-password" required></label><button class="admin-button" type="submit">Entrar al panel</button>
+      </form>
+      <form data-editor hidden>
+        <div class="admin-toolbar"><h2>Contenido</h2><button class="admin-button admin-button--quiet" type="button" data-logout>Cerrar sesión</button></div>
+        <fieldset class="admin-section"><legend>Datos del centro</legend><div class="admin-grid">
+          <label class="admin-field"><span>Nombre del centro</span><input name="businessName" required></label>
+          <label class="admin-field"><span>Teléfono</span><input name="phone" type="tel" required></label>
+          <label class="admin-field admin-span"><span>Dirección completa</span><input name="address" required></label>
+          <label class="admin-field"><span>Horario entre semana</span><input name="hoursWeek" placeholder="9:00 a 18:00"></label>
+          <label class="admin-field"><span>Horario fin de semana</span><input name="hoursWeekend" placeholder="Cerrado"></label>
+          <label class="admin-field admin-span"><span>Descripción de la web</span><textarea name="description" rows="3"></textarea></label>
+        </div></fieldset>
+        <fieldset class="admin-section"><legend>Servicios y precios</legend><div data-services></div><button class="admin-button admin-button--quiet" type="button" data-add-service>+ Añadir servicio</button></fieldset>
+        <fieldset class="admin-section"><legend>Imágenes</legend><p class="admin-help">Puedes pegar un enlace de imagen o subir una imagen (máximo 8 MB).</p><div class="admin-grid">
+          <div class="admin-image"><label class="admin-field"><span>Imagen principal</span><input name="image-hero" type="url"></label><label class="admin-upload">Subir imagen<input type="file" accept="image/*" data-upload="hero"></label></div>
+          <div class="admin-image"><label class="admin-field"><span>Imagen de consulta</span><input name="image-consultation" type="url"></label><label class="admin-upload">Subir imagen<input type="file" accept="image/*" data-upload="consultation"></label></div>
+          <div class="admin-image"><label class="admin-field"><span>Suelo pélvico y posparto</span><input name="image-pelvic" type="url"></label><label class="admin-upload">Subir imagen<input type="file" accept="image/*" data-upload="pelvic"></label></div>
+          <div class="admin-image"><label class="admin-field"><span>Deportiva</span><input name="image-sports" type="url"></label><label class="admin-upload">Subir imagen<input type="file" accept="image/*" data-upload="sports"></label></div>
+          <div class="admin-image"><label class="admin-field"><span>Pediátrica</span><input name="image-pediatric" type="url"></label><label class="admin-upload">Subir imagen<input type="file" accept="image/*" data-upload="pediatric"></label></div>
+        </div></fieldset>
+        <fieldset class="admin-section"><legend>Oferta destacada</legend><label class="admin-checkbox"><input name="offerActive" type="checkbox"><span>Mostrar oferta en la web</span></label><div class="admin-grid"><label class="admin-field"><span>Título</span><input name="offerTitle"></label><label class="admin-field admin-span"><span>Descripción de la oferta</span><textarea name="offerText" rows="3"></textarea></label></div></fieldset>
+        <div class="admin-save"><button class="admin-button" type="submit">Guardar y publicar cambios</button></div>
+      </form>
+    </section>
+    <footer>Centro de Fisioterapia San Juan · Acceso privado</footer>
+  </main>
+  <script type="module" src="../assets/js/admin.js"></script>
+</body>
+</html>
